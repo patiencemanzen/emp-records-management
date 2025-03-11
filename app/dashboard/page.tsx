@@ -1,33 +1,14 @@
 'use client';
+
 import Navbar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import Header from "../components/header";
 import TableControls from "../components/table-controls";
 import Table from "../components/table";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function EmployeeTable() {
-    const { data: session, status } = useSession();
-    const router = useRouter();
     const [data, setData] = useState([]);
-
-    useEffect(() => {
-        if (!session) {
-            router.push("/auth/signin");
-        } else {
-            getEmployees();
-        }
-    }, [router, session]);
-
-    if (status === "loading") {
-        return <p>Loading...</p>;
-    }
-
-    if (!session) {
-        return null;
-    }
 
     const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Role'];
 
@@ -48,9 +29,13 @@ export default function EmployeeTable() {
         console.log(data)
     };
 
+    useEffect(() => {
+        getEmployees();
+    }, []);
+
     return (
         <div>
-            <Navbar user={{ email: session.user?.email || '' }} />
+            <Navbar user={{ email: '' }} />
 
             <div className="min-h-screen flex bg-gray-100">
                 {/* Sidebar */}

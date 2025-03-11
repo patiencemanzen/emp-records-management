@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import NextAuth, { User as NextAuthUser } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 declare module "next-auth" {
@@ -13,12 +13,8 @@ declare module "next-auth" {
   }
 }
 
-interface ExtendedUser extends NextAuthUser {
-  firstName: string;
-  lastName: string;
-}
-
 export const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -30,6 +26,7 @@ export const handler = NextAuth({
         if (!credentials) {
           return null;
         }
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
@@ -41,32 +38,18 @@ export const handler = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.firstName = (user as ExtendedUser).firstName;
-        token.lastName = (user as ExtendedUser).lastName;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.firstName = token.firstName as string;
-        session.user.lastName = token.lastName as string;
-      }
-
-      return session;
-    },
-  },
+  debug: false,
   session: {
     strategy: "jwt",
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
+  useSecureCookies: true,
+  logger: {
+    error(code, metadata) {
+      console.log("authError", { code, metadata });
+    },
   },
 });
 
