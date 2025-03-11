@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { NextRequest } from "next/server";
 
 interface RegisterRequest {
   firstName: string;
@@ -8,7 +9,7 @@ interface RegisterRequest {
   password: string;
 }
 
-export async function POST(req: Request): Promise<Response> {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     const { firstName, lastName, email, password }: RegisterRequest =
       await req.json();
