@@ -7,10 +7,10 @@ export default function Home() {
         <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-xl text-center">
             <h1 className="text-4xl font-bold sm:text-6xl">
-              <span className="bg-gradient-to-r from-green-300 to-white bg-clip-text text-transparent"> Find Your Perfect Home with Ease </span>
+              <span className="bg-gradient-to-r from-green-300 to-white bg-clip-text text-transparent"> Manage Your Startup Employee </span>
             </h1>
 
-            <p className="mt-5 text-base text-white sm:text-xl">Discover a hassle-free way to rent properties. With our extensive listings and user-friendly platform.</p>
+            <p className="mt-5 text-base text-white sm:text-xl">Discover a hassle-free way to manage employee. With our extensive system and user-friendly platform.</p>
 
             <div className="flex items-center justify-center mt-12">
               <Link href={"/auth/signup"} className="bg-white px-10 py-3 rounded-full font-semibold cursor-pointer">Get Started</Link>

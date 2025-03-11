@@ -1,51 +1,62 @@
 import prisma from "@/lib/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(res: NextApiResponse) {
+export async function GET() {
   try {
     const employees = await prisma.employee.findMany();
-    res.status(200).json({ data: employees });
+    return NextResponse.json({ data: employees }, { status: 200 });
   } catch {
-    res.status(500).json({ error: "Failed to fetch employees" });
+    return NextResponse.json(
+      { error: "Failed to fetch employees" },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const { firstName, lastName, email, phone, role } = req.body;
+export async function POST(req: NextRequest) {
+  const { firstName, lastName, email, phone, role } = await req.json();
 
   try {
     const employee = await prisma.employee.create({
       data: { firstName, lastName, email, phone, role },
     });
-    res.status(201).json({ data: employee });
+    return NextResponse.json({ data: employee }, { status: 201 });
   } catch {
-    res.status(500).json({ error: "Failed to create employee" });
+    return NextResponse.json(
+      { error: "Failed to create employee" },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(req: NextApiRequest, res: NextApiResponse) {
-  const { firstName, lastName, phone } = req.body;
-  const { id } = await req.body;
+export async function PUT(req: NextRequest) {
+  const { firstName, lastName, phone, id } = await req.json();
 
   try {
     const updatedEmployee = await prisma.employee.update({
       where: { id },
       data: { firstName, lastName, phone },
     });
-    res.status(200).json({ data: updatedEmployee });
+    return NextResponse.json({ data: updatedEmployee }, { status: 200 });
   } catch {
-    res.status(500).json({ error: "Failed to update employee" });
+    return NextResponse.json(
+      { error: "Failed to update employee" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(req: Request, res: NextApiResponse) {
+export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json();
 
     await prisma.employee.delete({ where: { id } });
 
-    res.status(200).json({ message: "Employee deleted" });
+    return NextResponse.json({ message: "Employee deleted" }, { status: 200 });
   } catch {
-    res.status(500).json({ error: "Failed to delete employee" });
+    return NextResponse.json(
+      { error: "Failed to delete employee" },
+      { status: 500 }
+    );
   }
 }

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   interface Session {
@@ -13,7 +14,7 @@ declare module "next-auth" {
   }
 }
 
-export const handler = NextAuth({
+const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
@@ -31,8 +32,13 @@ export const handler = NextAuth({
           where: { email: credentials.email },
         });
 
-        if (user && user.password === credentials.password) {
-          return user;
+        if (user && bcrypt.compareSync(credentials.password, user.password)) {
+          return {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          };
         }
         return null;
       },
