@@ -1,37 +1,49 @@
 'use client';
+
 import Button from "@/app/components/button";
 import Input from "@/app/components/input-field";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
-    const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
-    const [message, setMessage] = useState("");
+    const router = useRouter();
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
-    const handleSignup = async (e: { preventDefault: () => void; }) => {
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        const res = await fetch("/api/auth/signup", {
+        // Call the backend API to create the user
+        const response = await fetch("/api/auth/register", {
             method: "POST",
-            body: JSON.stringify(formData),
-            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ firstName, lastName, email, password }),
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
 
-        const data = await res.json();
-        setMessage(data.message || data.error);
+        if (response.ok) {
+            router.push("/auth/signin");
+        } else {
+            setError("Error during registration");
+        }
     };
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row">
+        <div className="min-h-screen flex flex-col md:flex-row items-center lg:justify-center">
             {/* Left Side - Image and Text */}
-            <div className="w-full md:w-1/2 relative">
+            <div className="w-full h-screen md:w-1/2 relative hidden lg:block">
                 <Image
                     src="/images/model.png"
                     alt="Signup Visual"
                     className="w-full h-screen object-cover"
-                    width={500}
-                    height={700}
+                    width={1000}
+                    height={1000}
                 />
                 <div className="absolute bottom-10 left-10 text-white text-center">
                     <h2 className="text-lg font-semibold">No Hazzles</h2>
@@ -42,32 +54,36 @@ export default function SignupForm() {
             </div>
 
             {/* Right Side - Signup Form */}
-            <div className="w-full md:w-1/2 p-6">
+            <div className="w-full lg:w-1/2 p-6 ">
                 <div className="flex flex-col justify-center items-center">
                     <div>
                         <div className="pt-5 pb-3">
                             <h1 className="text-2xl font-bold text-slate-700">Create your free account</h1>
                             <p className="text-gray-600 mt-3">
-                                Already registered? <Link href="/auth/login" className="text-green-500">Sign in</Link>
+                                Already registered? <Link href="/auth/signin" className="text-green-500">Sign in</Link>
                             </p>
                         </div>
 
                         <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 mt-9 border border-gray-100">
-                            {message && <p className="text-red-500">{message}</p>}
-
-                            <form onSubmit={handleSignup}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="flex gap-4">
-                                    <Input label="First Name" type="text" placeholder="Fisrtname" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
-                                    <Input label="Last Name" type="text" placeholder="Lastname" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+                                    <Input label="First Name" type="text" placeholder="Fisrtname" value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)} />
+                                    <Input label="Last Name" type="text" placeholder="Lastname" value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)} />
                                 </div>
 
                                 <div className="mt-4">
-                                    <Input label="Email" type="email" placeholder="example@example.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                                    <Input label="Email" type="email" placeholder="example@example.com" value={email}
+                                        onChange={(e) => setEmail(e.target.value)} />
                                 </div>
 
                                 <div className="mt-4">
-                                    <Input label="Password" type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                                    <Input label="Password" type="password" placeholder="Password" value={password}
+                                        onChange={(e) => setPassword(e.target.value)} />
                                 </div>
+
+                                {error && <p style={{ color: "red" }}>{error}</p>}
 
                                 <div className="flex items-center justify-between">
                                     <div></div>

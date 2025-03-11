@@ -17,6 +17,7 @@
     "@prisma/client": "^6.4.1",
     "@prisma/extension-accelerate": "^1.2.2",
     "axios": "^1.8.2",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "mongoose": "^8.12.1",
     "next": "15.2.1",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

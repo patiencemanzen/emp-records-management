@@ -4,27 +4,53 @@ import Sidebar from "../components/sidebar";
 import Header from "../components/header";
 import TableControls from "../components/table-controls";
 import Table from "../components/table";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function EmployeeTable() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        if (!session) {
+            router.push("/auth/signin");
+        } else {
+            getEmployees();
+        }
+    }, [router, session]);
+
+    if (status === "loading") {
+        return <p>Loading...</p>;
+    }
+
+    if (!session) {
+        return null;
+    }
+
     const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Role'];
 
-    const employees = [
-        { firstName: "Joshua", lastName: "Bakare", email: "josh@gmail.com", phone: "+2348012345678", role: "Admin" },
-        { firstName: "Jane", lastName: "Clement", email: "bakery@gmail.com", phone: "+2348012345678", role: "Staff" },
-        { firstName: "Hannah", lastName: "Johnson", email: "josh.Johnson@gmail.com", phone: "+2348012345678", role: "Staff" },
-        { firstName: "John", lastName: "Ngoka", email: "josh.Ngoka@gmail.com", phone: "+2348012345678", role: "Staff" },
-        { firstName: "Omotayo", lastName: "Adeleke", email: "josh.Adeleke@gmail.com", phone: "+2348012345678", role: "Staff" },
-        { firstName: "Gloria", lastName: "Amadi", email: "josh.bakery@gmail.com", phone: "+2348012345678", role: "Staff" }
-    ];
+    const getEmployees = async () => {
+        const response = await fetch('/api/employees');
+        const data = await response.json();
+        setData(data.data);
+    }
 
-    const handleDelete = (email: string) => {
-        console.log(`Delete employee with email: ${email}`);
-        // Implement delete functionality here
+    const handleDelete = async (id: string) => {
+        const res = await fetch("/api/employees", {
+            method: "DELETE",
+            body: JSON.stringify({ id: id }),
+            headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+
+        console.log(data)
     };
 
     return (
         <div>
-            <Navbar />
+            <Navbar user={{ email: session.user?.email || '' }} />
 
             <div className="min-h-screen flex bg-gray-100">
                 {/* Sidebar */}
@@ -39,7 +65,7 @@ export default function EmployeeTable() {
 
                     {/* Table */}
                     <div className="mt-4">
-                        <Table headers={headers} data={employees} onDelete={handleDelete} />
+                        <Table headers={headers} data={data} onDelete={handleDelete} />
                     </div>
                 </div>
             </div>

@@ -6,6 +6,24 @@ import Button from './button';
 
 function Header() {
     const [isOpen, setIsOpen] = useState(false);
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+
+    const submitEmployee = async () => {
+        const res = await fetch("/api/employees", {
+            method: "POST",
+            body: JSON.stringify({
+                firstName: firstname,
+                lastName: lastname, email, phone
+            }),
+            headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+
+        console.log(data)
+    };
 
     return (
         <header>
@@ -31,20 +49,18 @@ function Header() {
                 <h2 className='text-2xl font-semibold mb-2'>Create New Employee</h2>
                 <p className='text-sm font-normal'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus vel earum deleniti voluptatum nulla hic quibusdam enim eius vero velit?</p>
 
-                <form action="" className='mt-5 border-t border-gray-200 pt-5'>
+                <form onSubmit={submitEmployee} className='mt-5 border-t border-gray-200 pt-5'>
                     <div className=''>
-                        <Input label="First Name" type='text' placeholder="Enter first name" value='' onChange={() => { }} />
-                    </div>
-
-                    <div className='mt-5'>
-                        <Input label="Last Name" type='text' placeholder="Enter first name" value='' onChange={() => { }} />
-                    </div>
-
-                    <div className='mt-5'>
-                        <Input label="Email Address" type='email' placeholder="Email" value='' onChange={() => { }} />
+                        <Input label="First Name" type='text' placeholder="Enter first name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                     </div>
                     <div className='mt-5'>
-                        <Input label="Phone" type='number' placeholder="Phone" value='' onChange={() => { }} />
+                        <Input label="Last Name" type='text' placeholder="Enter first name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
+                    </div>
+                    <div className='mt-5'>
+                        <Input label="Email Address" type='email' placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </div>
+                    <div className='mt-5'>
+                        <Input label="Phone" type='number' placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                     </div>
 
                     <Button label="Create Employee" type="submit" />

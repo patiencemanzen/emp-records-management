@@ -1,28 +1,31 @@
 'use client';
 import Button from "@/app/components/button";
 import Input from "@/app/components/input-field";
-import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const handleLogin = async (e: { preventDefault: () => void; }) => {
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+
         const result = await signIn("credentials", {
+            redirect: false,
             email,
             password,
-            redirect: false,
         });
 
         if (result?.error) {
             setError(result.error);
         } else {
-            window.location.href = "/dashboard"; // Redirect on success
+            router.push("/dashboard");
         }
     };
 
@@ -59,7 +62,7 @@ export default function LoginForm() {
                         <div className="max-w-md min-w-md w-full bg-white shadow-lg rounded-lg p-8 mt-9 border border-gray-100">
                             {error && <p className="text-red-500">{error}</p>}
 
-                            <form onSubmit={handleLogin}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="mt-4">
                                     <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
                                 </div>
